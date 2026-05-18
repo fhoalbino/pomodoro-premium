@@ -29,7 +29,6 @@ Timer Pomodoro com tema preto e dourado, foco em produtividade e pausas ergonôm
 
 ## 🖼️ Screenshots
 
-> _Reserve esta seção. Adicione capturas após primeira execução._
 
 | Tela principal | Configurações | Instalado no Windows |
 |:---:|:---:|:---:|
