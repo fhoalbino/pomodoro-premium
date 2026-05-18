@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="premium-gold">
+<html lang="pt-BR" data-theme="gold">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
@@ -116,7 +116,7 @@
           <span class="btn-label">Iniciar</span>
         </button>
         <button id="pauseBtn" class="btn" aria-label="Pausar timer" disabled>Pausar</button>
-        <button id="resetBtn" class="btn btn-ghost" aria-label="Resetar timer" title="Reset (R)">Resetar</button>
+        <button id="resetBtn" class="btn btn-ghost" aria-label="Resetar timer" title="Reset (Shift+R)">Resetar</button>
         <button id="skipBtn"  class="btn btn-ghost" aria-label="Pular etapa" title="Pular (S)">Pular ▸</button>
       </div>
 
@@ -185,6 +185,53 @@
           </label>
         </div>
 
+        <div class="theme-panel" aria-labelledby="themeTitle">
+          <div class="theme-panel-head">
+            <div>
+              <h3 id="themeTitle">Tema</h3>
+              <p id="activeThemeText">Tema ativo: Gold</p>
+            </div>
+            <span id="themePreview" class="theme-preview" aria-label="Previa da cor da fase"></span>
+          </div>
+
+          <div class="theme-grid">
+            <label>
+              <span>Selecionar tema</span>
+              <select id="themeSelect">
+                <option value="gold">Gold</option>
+                <option value="pink">Pink</option>
+                <option value="green">Green</option>
+                <option value="custom">Custom</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="theme-phase-row">
+            <span class="theme-row-label">Editar cor de</span>
+            <div class="theme-phase-tools" aria-label="Escolher fase para personalizar">
+              <button class="theme-phase-btn is-active" type="button" data-theme-phase="focus" aria-label="Editar cor do foco">Foco</button>
+              <button class="theme-phase-btn" type="button" data-theme-phase="short" aria-label="Editar cor da pausa curta">Pausa curta</button>
+              <button class="theme-phase-btn" type="button" data-theme-phase="long" aria-label="Editar cor da pausa longa">Pausa longa</button>
+            </div>
+          </div>
+
+          <div class="theme-summary" aria-live="polite">
+            <span class="theme-summary-label">Editando</span>
+            <strong id="themeEditingValue" class="theme-summary-value">Foco</strong>
+            <button id="themeHexChip" class="theme-hex-chip" type="button" aria-label="Copiar HEX da fase selecionada">
+              <span id="themeCurrentHex">#D4AF37</span>
+            </button>
+            <button id="copyThemeHex" class="theme-copy-btn" type="button" aria-label="Copiar HEX da fase selecionada">Copiar</button>
+          </div>
+
+          <div class="theme-actions">
+            <button id="resetTheme" class="btn btn-ghost" type="button">Restaurar tema</button>
+            <button id="openColorPicker" class="btn btn-primary" type="button" aria-label="Abrir painel de personalização de cor">Editar cor</button>
+          </div>
+
+          <p id="themeError" class="theme-error" role="status" aria-live="polite"></p>
+        </div>
+
         <div class="settings-actions">
           <button id="resetSettings" class="btn btn-ghost">Restaurar padrão</button>
           <button id="saveSettings" class="btn btn-primary">Salvar</button>
@@ -217,6 +264,43 @@
       <div class="modal-actions">
         <button id="confirmCancel" class="btn btn-ghost" type="button">Cancelar</button>
         <button id="confirmOk" class="btn btn-primary" type="button">Continuar</button>
+      </div>
+    </div>
+  </div>
+  <div id="colorPickerModal" class="modal-overlay color-picker-overlay hidden" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="colorPickerTitle">
+    <div class="color-picker-card">
+      <div class="color-picker-head">
+        <div>
+          <h3 id="colorPickerTitle" class="modal-title">Personalizar cor</h3>
+          <p id="colorPickerPhase" class="modal-text">Editando: Foco</p>
+        </div>
+        <span id="colorPickerPreview" class="color-picker-preview" aria-label="Previa da cor"></span>
+        <button id="closeColorPicker" class="drawer-close" type="button" aria-label="Fechar personalizador de cor">×</button>
+      </div>
+
+      <div id="colorPickerSv" class="color-picker-sv" role="slider" aria-label="Saturacao e brilho" tabindex="0">
+        <span id="colorPickerSvCursor" class="color-picker-cursor" aria-hidden="true"></span>
+      </div>
+
+      <div id="colorPickerHue" class="color-picker-hue" role="slider" aria-label="Matiz" tabindex="0">
+        <span id="colorPickerHueCursor" class="color-picker-hue-cursor" aria-hidden="true"></span>
+      </div>
+
+      <div class="color-picker-fields">
+        <label>
+          <span>HEX</span>
+          <input id="colorPickerHexInput" type="text" inputmode="text" autocomplete="off" spellcheck="false" maxlength="7" value="#D4AF37" />
+        </label>
+        <button id="copyColorHex" class="btn btn-ghost" type="button" aria-label="Copiar HEX atual">Copiar HEX</button>
+      </div>
+
+      <p id="colorPickerStatus" class="theme-error" role="status" aria-live="polite"></p>
+
+      <div class="modal-actions color-picker-actions">
+        <button id="restorePhaseColor" class="btn btn-ghost" type="button" aria-label="Restaurar cor padrao da fase">Restaurar fase</button>
+        <span class="color-picker-action-spacer" aria-hidden="true"></span>
+        <button id="cancelColorPicker" class="btn btn-ghost" type="button" aria-label="Cancelar alteracoes de cor">Cancelar</button>
+        <button id="applyColorPicker" class="btn btn-primary" type="button" aria-label="Aplicar e salvar cor">Aplicar</button>
       </div>
     </div>
   </div>

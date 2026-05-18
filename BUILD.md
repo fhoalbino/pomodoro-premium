@@ -77,8 +77,8 @@ Saída em `src-tauri/target/release/bundle/`:
 
 | Pasta | Conteúdo | Para quem |
 |-------|----------|-----------|
-| `msi/`  | `Pomodoro Premium_1.1.0_x64_en-US.msi` | Distribuição corporativa / Windows clássico |
-| `nsis/` | `Pomodoro Premium_1.1.0_x64-setup.exe` | Usuário comum (instalação por usuário, leve, ~3-6 MB) |
+| `msi/`  | `Pomodoro Premium_1.0.1_x64_pt-BR.msi` | Distribuição corporativa / Windows clássico |
+| `nsis/` | `Pomodoro Premium_1.0.1_x64-setup.exe` | Usuário comum (instalação por usuário, leve, ~3-6 MB) |
 
 Recomende o **NSIS `.exe`** para o usuário final — menor, instalação per-user, sem privilégios admin.
 
@@ -100,7 +100,7 @@ Para distribuição pública recorrente, assine o `.exe`/`.msi` com um certifica
 Exemplo de checksum:
 
 ```powershell
-Get-FileHash "src-tauri/target/release/bundle/nsis/Pomodoro Premium_1.1.0_x64-setup.exe" -Algorithm SHA256
+Get-FileHash "src-tauri/target/release/bundle/nsis/Pomodoro Premium_1.0.1_x64-setup.exe" -Algorithm SHA256
 ```
 
 ---
@@ -133,7 +133,7 @@ git remote set-url origin https://github.com/fhoalbino/pomodoro-premium.git
 ### Publicar o instalador como Release
 
 1. No GitHub: aba **Releases** → **Draft a new release**
-2. **Tag version:** `v1.1.0` (criar nova). **Title:** `Pomodoro Premium v1.1.0`
+2. **Tag version:** `v1.0.1` (criar nova). **Title:** `Pomodoro Premium v1.0.1`
 3. Descreva mudanças no corpo
 4. Anexe o `.exe` do NSIS em `src-tauri/target/release/bundle/nsis/` e, se necessário, o `.msi` em `src-tauri/target/release/bundle/msi/`
 5. Inclua o SHA256 gerado com `Get-FileHash`
@@ -159,7 +159,7 @@ Sempre que mudar algo significativo:
 1. Atualize `version` em **dois** lugares:
    - `src-tauri/Cargo.toml` → `[package] version = "1.0.1"`
    - `src-tauri/tauri.conf.json` → `"version": "1.0.1"`
-2. Atualize `CACHE_VERSION` em `service-worker.js` → `pomodoro-premium-v4` (força refresh em PWA)
+2. Atualize `CACHE_VERSION` em `service-worker.js` quando o shell PWA mudar (força refresh em PWA)
 3. Rebuild: `cargo tauri build`
 4. Nova release no GitHub com nova tag
 

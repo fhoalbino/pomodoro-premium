@@ -20,6 +20,9 @@ import {
 } from './timer.js';
 import { DEFAULTS, setupSettingsUI } from './settings.js';
 import { setupPWA }           from './pwa.js';
+import * as Theme             from './theme.js';
+
+Theme.restoreSavedTheme();
 
 function $(id) { return document.getElementById(id); }
 
@@ -70,6 +73,34 @@ const el = {
   particlesOn:     $('particlesOn'),
   saveSettings:    $('saveSettings'),
   resetSettings:   $('resetSettings'),
+
+  themeSelect:          $('themeSelect'),
+  resetTheme:           $('resetTheme'),
+  openColorPicker:      $('openColorPicker'),
+  themePreview:         $('themePreview'),
+  activeThemeText:      $('activeThemeText'),
+  themeError:           $('themeError'),
+  themeEditingValue:    $('themeEditingValue'),
+  themeCurrentHex:      $('themeCurrentHex'),
+  themeHexChip:         $('themeHexChip'),
+  copyThemeHex:         $('copyThemeHex'),
+  themePhaseButtons:    document.querySelectorAll('.theme-phase-btn'),
+
+  colorPickerModal:     $('colorPickerModal'),
+  colorPickerTitle:     $('colorPickerTitle'),
+  colorPickerPhase:     $('colorPickerPhase'),
+  colorPickerPreview:   $('colorPickerPreview'),
+  colorPickerSv:        $('colorPickerSv'),
+  colorPickerSvCursor:  $('colorPickerSvCursor'),
+  colorPickerHue:       $('colorPickerHue'),
+  colorPickerHueCursor: $('colorPickerHueCursor'),
+  colorPickerHexInput:  $('colorPickerHexInput'),
+  colorPickerStatus:    $('colorPickerStatus'),
+  copyColorHex:         $('copyColorHex'),
+  restorePhaseColor:    $('restorePhaseColor'),
+  closeColorPicker:     $('closeColorPicker'),
+  cancelColorPicker:    $('cancelColorPicker'),
+  applyColorPicker:     $('applyColorPicker'),
 };
 
 function fmt(sec) {
@@ -129,6 +160,13 @@ function hasActiveSession(state) {
   return state.running || (state.remaining > 0 && state.remaining < state.total);
 }
 
+function applyPhaseClass(target, mode) {
+  if (!target) return;
+  target.classList.remove('phase-focus', 'phase-short', 'phase-long');
+  target.classList.add(PHASES[mode].cssClass);
+  Theme.applyModeVariables(target, mode);
+}
+
 /* ---------- Render ---------- */
 function render(state, settings) {
   const preview = isPreview(state);
@@ -164,9 +202,12 @@ function render(state, settings) {
     el.streakTotalMin.textContent = String(Math.round(h.focusSec / 60));
   }
 
-  // Phase color class on body follows the VIEWED tab so theme matches the card.
-  el.body.classList.remove('phase-focus', 'phase-short', 'phase-long');
-  el.body.classList.add(PHASES[viewMode].cssClass);
+  // Main UI follows selectedTab; live surfaces follow activeMode.
+  applyPhaseClass(el.body, viewMode);
+  applyPhaseClass(el.timerCard, viewMode);
+  applyPhaseClass(el.miniTimer, state.phase);
+  applyPhaseClass(el.activeBanner, state.phase);
+  applyPhaseClass(el.confirmModal, selectedTab);
 
   // Preview & running indicators on card.
   el.timerCard.classList.toggle('is-running', state.running && !preview);
@@ -244,6 +285,7 @@ function setupHotkeys(actions) {
   document.addEventListener('keydown', (e) => {
     const t = e.target;
     if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if (el.colorPickerModal && !el.colorPickerModal.classList.contains('hidden')) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
 
     if (e.code === 'Space')                       { e.preventDefault(); actions.toggle(); }
@@ -260,6 +302,261 @@ function preventZoomShortcuts() {
     if (!(e.ctrlKey || e.metaKey)) return;
     if (['=', '+', '-', '_', '0'].includes(e.key)) e.preventDefault();
   });
+}
+
+function setupThemeUI(onThemeChange, onPhaseSelect) {
+  const labels = new Map(Theme.getThemes().map((theme) => [theme.name, theme.label]));
+  const phaseLabels = Theme.getPhaseLabels();
+  let editingPhase = selectedTab;
+  let pickerPhase = selectedTab;
+  let pickerHsv = Theme.hexToHsv(Theme.getPhaseColor(editingPhase));
+  let pickerHex = Theme.getPhaseColor(editingPhase);
+  let pickerOpen = false;
+
+  function themeLabel(theme) {
+    if (theme.themeName === 'custom') return 'Custom';
+    return labels.get(theme.themeName) || 'Gold';
+  }
+
+  function updatePanel(message = '') {
+    const theme = Theme.getAppliedTheme();
+    const hex = Theme.getPhaseColor(editingPhase, theme);
+    el.themeSelect.value = theme.themeName;
+    el.themePreview.style.backgroundColor = hex;
+    el.themePreview.style.boxShadow = `0 0 18px ${Theme.getPhaseTokens(editingPhase).glow}`;
+    el.activeThemeText.textContent = `Tema ativo: ${themeLabel(theme)}`;
+    el.themeEditingValue.textContent = phaseLabels[editingPhase];
+    el.themeCurrentHex.textContent = hex;
+    el.themeError.textContent = message;
+    el.themePhaseButtons.forEach((button) => {
+      const isActive = button.dataset.themePhase === editingPhase;
+      button.classList.toggle('is-active', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+    });
+  }
+
+  function setPickerVars() {
+    const style = el.colorPickerModal.style;
+    style.setProperty('--picker-hue', String(Math.round(pickerHsv.h)));
+    style.setProperty('--picker-s', pickerHsv.s.toFixed(4));
+    style.setProperty('--picker-v', pickerHsv.v.toFixed(4));
+  }
+
+  function updatePicker(message = '') {
+    pickerHex = Theme.hsvToHex(pickerHsv);
+    el.colorPickerTitle.textContent = 'Personalizar cor';
+    el.colorPickerPhase.textContent = `Editando: ${phaseLabels[pickerPhase]}`;
+    el.colorPickerPreview.style.backgroundColor = pickerHex;
+    el.colorPickerHexInput.value = pickerHex;
+    el.colorPickerStatus.textContent = message;
+    setPickerVars();
+    Theme.applyModeVariables(el.colorPickerModal, pickerPhase);
+  }
+
+  function previewPickerHex(hex) {
+    const normalized = Theme.normalizeHex(hex);
+    if (!normalized) {
+      el.colorPickerStatus.textContent = 'Digite uma cor HEX valida, como #68DDBD ou #0FF.';
+      return false;
+    }
+
+    pickerHsv = Theme.hexToHsv(normalized);
+    pickerHex = normalized;
+    const result = Theme.previewPhaseColor(pickerPhase, normalized);
+    updatePicker(result.ok ? '' : result.error);
+    updatePanel(result.ok ? '' : result.error);
+    onThemeChange?.();
+    return result.ok;
+  }
+
+  function openPicker() {
+    pickerPhase = editingPhase;
+    pickerHex = Theme.getPhaseColor(pickerPhase);
+    pickerHsv = Theme.hexToHsv(pickerHex);
+    pickerOpen = true;
+    el.colorPickerModal.classList.remove('hidden');
+    el.colorPickerModal.setAttribute('aria-hidden', 'false');
+    Theme.applyModeVariables(el.colorPickerModal, pickerPhase);
+    updatePicker('');
+    requestAnimationFrame(() => el.colorPickerHexInput.focus());
+  }
+
+  function closePicker({ commit } = { commit: false }) {
+    if (!commit) Theme.cancelPreview();
+    pickerOpen = false;
+    el.colorPickerModal.classList.add('hidden');
+    el.colorPickerModal.setAttribute('aria-hidden', 'true');
+    updatePanel('');
+    onThemeChange?.();
+    el.openColorPicker.focus();
+  }
+
+  function setCustomizePhase(phase) {
+    if (!Theme.PHASE_KEYS.includes(phase)) return;
+    editingPhase = phase;
+    Theme.applyModeVariables(el.themePreview, phase);
+    updatePanel('');
+  }
+
+  function pointInElement(element, event) {
+    const rect = element.getBoundingClientRect();
+    const x = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
+    const y = Math.max(0, Math.min(rect.height, event.clientY - rect.top));
+    return { x, y, rect };
+  }
+
+  function setSvFromPointer(event) {
+    const { x, y, rect } = pointInElement(el.colorPickerSv, event);
+    pickerHsv = {
+      h: pickerHsv.h,
+      s: rect.width ? x / rect.width : pickerHsv.s,
+      v: rect.height ? 1 - y / rect.height : pickerHsv.v,
+    };
+    previewPickerHex(Theme.hsvToHex(pickerHsv));
+  }
+
+  function setHueFromPointer(event) {
+    const { x, rect } = pointInElement(el.colorPickerHue, event);
+    pickerHsv = {
+      h: rect.width ? (x / rect.width) * 360 : pickerHsv.h,
+      s: pickerHsv.s,
+      v: pickerHsv.v,
+    };
+    previewPickerHex(Theme.hsvToHex(pickerHsv));
+  }
+
+  function bindDrag(target, handler) {
+    target.addEventListener('pointerdown', (event) => {
+      event.preventDefault();
+      target.setPointerCapture?.(event.pointerId);
+      handler(event);
+      const move = (moveEvent) => handler(moveEvent);
+      const up = () => {
+        target.removeEventListener('pointermove', move);
+        target.removeEventListener('pointerup', up);
+        target.removeEventListener('pointercancel', up);
+      };
+      target.addEventListener('pointermove', move);
+      target.addEventListener('pointerup', up);
+      target.addEventListener('pointercancel', up);
+    });
+  }
+
+  el.themeSelect.addEventListener('change', () => {
+    const name = el.themeSelect.value;
+    if (name === 'custom') {
+      openPicker();
+      el.themeError.textContent = 'Edite uma fase para criar um tema custom.';
+      return;
+    }
+
+    Theme.applyTheme(name);
+    updatePanel('');
+    onThemeChange?.();
+  });
+
+  el.themePhaseButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const phase = button.dataset.themePhase;
+      if (!Theme.PHASE_KEYS.includes(phase)) return;
+      onPhaseSelect?.(phase);
+      if (!onPhaseSelect) setCustomizePhase(phase);
+    });
+  });
+
+  el.openColorPicker.addEventListener('click', openPicker);
+
+  function copyPanelHex() {
+    const hex = Theme.getPhaseColor(editingPhase, Theme.getAppliedTheme());
+    navigator.clipboard?.writeText(hex);
+    updatePanel('HEX copiado.');
+  }
+
+  el.themeHexChip.addEventListener('click', copyPanelHex);
+  el.copyThemeHex.addEventListener('click', copyPanelHex);
+
+  el.resetTheme.addEventListener('click', () => {
+    Theme.resetTheme();
+    updatePanel('');
+    onThemeChange?.();
+  });
+
+  bindDrag(el.colorPickerSv, setSvFromPointer);
+  bindDrag(el.colorPickerHue, setHueFromPointer);
+
+  el.colorPickerHexInput.addEventListener('input', () => {
+    const normalized = Theme.normalizeHex(el.colorPickerHexInput.value);
+    if (!normalized) {
+      el.colorPickerStatus.textContent = '';
+      return;
+    }
+    previewPickerHex(normalized);
+  });
+
+  el.colorPickerHexInput.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter') return;
+    event.preventDefault();
+    const normalized = Theme.normalizeHex(el.colorPickerHexInput.value);
+    if (!normalized) {
+      el.colorPickerStatus.textContent = 'HEX invalido. Use #RGB ou #RRGGBB.';
+      return;
+    }
+    previewPickerHex(normalized);
+    el.colorPickerStatus.textContent = 'Preview aplicado.';
+  });
+
+  el.copyColorHex.addEventListener('click', () => {
+    const normalized = Theme.normalizeHex(el.colorPickerHexInput.value);
+    if (!normalized) {
+      el.colorPickerStatus.textContent = 'HEX invalido.';
+      return;
+    }
+    navigator.clipboard?.writeText(normalized);
+    el.colorPickerStatus.textContent = 'HEX copiado.';
+  });
+
+  el.restorePhaseColor.addEventListener('click', () => {
+    const result = Theme.restorePhaseDefault(pickerPhase);
+    pickerHex = Theme.getPhaseColor(pickerPhase, Theme.getAppliedTheme());
+    pickerHsv = Theme.hexToHsv(pickerHex);
+    updatePicker(result.ok ? '' : 'Nao foi possivel restaurar esta fase.');
+    updatePanel('');
+    onThemeChange?.();
+  });
+
+  el.cancelColorPicker.addEventListener('click', () => closePicker({ commit: false }));
+  el.closeColorPicker.addEventListener('click', () => closePicker({ commit: false }));
+
+  el.applyColorPicker.addEventListener('click', () => {
+    const normalized = Theme.normalizeHex(el.colorPickerHexInput.value);
+    if (!normalized) {
+      el.colorPickerStatus.textContent = 'Digite uma cor HEX valida, como #68DDBD ou #0FF.';
+      return;
+    }
+    const result = Theme.applyPhaseColor(pickerPhase, normalized);
+    if (!result.ok) {
+      el.colorPickerStatus.textContent = result.error;
+      return;
+    }
+    editingPhase = pickerPhase;
+    closePicker({ commit: true });
+  });
+
+  el.colorPickerModal.addEventListener('click', (event) => {
+    if (event.target === el.colorPickerModal) closePicker({ commit: false });
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (!pickerOpen) return;
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closePicker({ commit: false });
+    }
+  });
+
+  updatePanel('');
+
+  return { setCustomizePhase, updatePanel };
 }
 
 /* ---------- Boot ---------- */
@@ -279,11 +576,17 @@ function boot() {
   el.body.classList.toggle('no-particles', !settings.particlesOn);
   applyMuteIcon(settings.soundOn);
 
+  let themeUI = null;
+
   const timer = createTimer({
     settings,
     state: savedState,
     onTick:   (s) => render(s, timer.getSettings()),
     onChange: (s) => {
+      if (s.autoCompleted) {
+        selectedTab = s.phase;
+        themeUI?.setCustomizePhase(selectedTab);
+      }
       render(s, timer.getSettings());
       Storage.saveState(timer.getState(), { selectedTab });
     },
@@ -343,6 +646,10 @@ function boot() {
     },
   });
   settingsUI.populate(settings);
+  themeUI = setupThemeUI(
+    () => render(timer.getState(), timer.getSettings()),
+    (phase) => selectTab(phase)
+  );
 
   function flashSaved() {
     const b = el.saveSettings;
@@ -353,8 +660,12 @@ function boot() {
 
   /* ----- Tab clicks: change selectedTab ONLY ----- */
   function selectTab(mode) {
-    if (selectedTab === mode) return;
+    if (selectedTab === mode) {
+      themeUI?.setCustomizePhase(mode);
+      return;
+    }
     selectedTab = mode;
+    themeUI?.setCustomizePhase(mode);
     Storage.saveState(timer.getState(), { selectedTab });
     render(timer.getState(), timer.getSettings());
     setErgo('');

@@ -1,6 +1,6 @@
 [package]
 name = "pomodoro-premium"
-version = "1.1.0"
+version = "1.0.1"
 description = "Pomodoro Premium — timer elegante de foco e pausas ergonômicas"
 authors = ["Pomodoro Premium contributors"]
 edition = "2021"

@@ -2,6 +2,30 @@
    responsive.css — Breakpoints + motion preferences
    ========================================================================== */
 
+@media (max-width: 720px) {
+  .color-picker-overlay {
+    align-items: flex-end;
+    justify-content: center;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.42);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+  }
+  .color-picker-card {
+    width: 100%;
+    max-width: 520px;
+    height: auto;
+    max-height: min(84vh, 720px);
+    margin: 0;
+    border-radius: 18px 18px 14px 14px;
+    animation: sheet-in 260ms var(--ease-out);
+  }
+  @keyframes sheet-in {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: none; }
+  }
+}
+
 @media (max-width: 480px) {
   body { padding: 16px 12px 36px; }
   .card { padding: 18px; }
@@ -12,6 +36,20 @@
   .phase-tab { padding: 7px 14px; font-size: 0.72rem; }
   .stats-card { padding: 14px; }
   .stat-num { font-size: 1.5rem; }
+  .theme-panel { padding: 14px; }
+  .theme-phase-tools { grid-template-columns: 1fr; }
+  .theme-summary { align-items: center; }
+  .theme-summary-label { flex-basis: 100%; }
+  .theme-hex-chip { max-width: 10em; }
+  .theme-actions { flex-direction: column-reverse; }
+  .theme-actions .btn { width: 100%; }
+  .color-picker-card { padding: 18px; }
+  .color-picker-sv { height: 190px; }
+  .color-picker-fields { grid-template-columns: 1fr; }
+  .color-picker-fields .btn { width: 100%; }
+  .color-picker-actions { flex-wrap: wrap; }
+  .color-picker-action-spacer { display: none; }
+  .color-picker-actions .btn { flex: 1 1 140px; }
   .app-footer { gap: 8px; font-size: 0.66rem; }
 }
 

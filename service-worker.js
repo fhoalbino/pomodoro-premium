@@ -9,7 +9,7 @@
    Bump CACHE_VERSION on any shell change.
    ========================================================================== */
 
-const CACHE_VERSION = 'pomodoro-premium-v4';
+const CACHE_VERSION = 'pomodoro-premium-v7';
 
 const CORE_ASSETS = [
   './',
@@ -26,6 +26,7 @@ const CORE_ASSETS = [
   './src/js/notifications.js',
   './src/js/pwa.js',
   './src/js/settings.js',
+  './src/js/theme.js',
   './public/icons/favicon.svg',
   './public/icons/icon-192.svg',
   './public/icons/icon-512.svg',
