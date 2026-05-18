@@ -33,7 +33,7 @@ Timer Pomodoro com tema preto e dourado, foco em produtividade e pausas ergonôm
 
 | Tela principal | Configurações | Instalado no Windows |
 |:---:|:---:|:---:|
-| `<img width="1600" height="858" alt="Home" src="https://github.com/user-attachments/assets/99feb298-6755-4139-b288-7eced890a956" />` | `docs/screenshot-settings.png` | `docs/screenshot-installed.png` |
+| <img width="1600" height="858" alt="Home" src="https://github.com/user-attachments/assets/99feb298-6755-4139-b288-7eced890a956" /> | `docs/screenshot-settings.png` | `docs/screenshot-installed.png` |
 
 ---
 
