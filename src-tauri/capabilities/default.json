@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Minimal capability set. The app is pure frontend (HTML/CSS/JS) — no Tauri JS API is invoked, so no permissions are granted. localStorage, Web Audio, Notifications all run on standard browser APIs.",
+  "windows": ["main"],
+  "permissions": []
+}

@@ -1,0 +1,144 @@
+/* ==========================================================================
+   themes.css — Theme tokens
+   Switch the whole app by changing :root vars or `data-theme` on <html>.
+
+   Available themes:
+     premium-gold  (default) — black + gold
+     midnight-blue           — black + electric blue
+     forest-emerald          — black + emerald
+
+   Add your own theme by copying a block and changing the values.
+   ========================================================================== */
+
+:root,
+[data-theme="premium-gold"] {
+  /* Surfaces */
+  --color-bg:           #050505;
+  --color-bg-2:         #0B0B0B;
+  --color-surface:      #131313;
+  --color-surface-2:    #0B0B0B;
+
+  /* Brand / primary */
+  --color-primary:        #D4AF37;
+  --color-primary-hover:  #F5D76E;
+  --color-primary-deep:   #8a7327;
+  --color-primary-ink:    #15100a;   /* text color on primary surfaces */
+
+  /* Text */
+  --color-text:    #F5F5F5;
+  --color-muted:   rgba(255, 255, 255, 0.70);
+  --color-dim:     rgba(255, 255, 255, 0.45);
+
+  /* Lines + glow */
+  --color-line:        rgba(212, 175, 55, 0.10);
+  --color-line-hi:     rgba(212, 175, 55, 0.28);
+  --color-glow:        rgba(212, 175, 55, 0.45);
+
+  /* Per-phase accents (color used by tabs, ring, label) */
+  --color-phase-focus:    #D4AF37;
+  --color-phase-focus-hi: #F5D76E;
+  --color-phase-short:    #6ec1c4;
+  --color-phase-short-hi: #9be7ea;
+  --color-phase-long:     #b58cf2;
+  --color-phase-long-hi:  #d3b8ff;
+
+  /* Shape */
+  --radius-card: 22px;
+  --radius-md:   14px;
+  --radius-sm:   10px;
+
+  /* Shadow */
+  --shadow-card:  0 18px 50px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(212, 175, 55, 0.06);
+  --shadow-hover: 0 22px 60px rgba(212, 175, 55, 0.14), 0 0 0 1px rgba(212, 175, 55, 0.28);
+
+  /* Typography */
+  --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI",
+               Inter, Roboto, "Helvetica Neue", Arial, system-ui, sans-serif;
+
+  /* Motion */
+  --ease:     cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-fast:   160ms;
+  --t-med:    280ms;
+  --t-slow:   520ms;
+}
+
+/* ---------- Alternate theme: Midnight Blue ---------- */
+[data-theme="midnight-blue"] {
+  --color-bg:           #04070F;
+  --color-bg-2:         #070C1B;
+  --color-surface:      #0D1428;
+  --color-surface-2:    #070C1B;
+
+  --color-primary:        #4F9EFF;
+  --color-primary-hover:  #8EC0FF;
+  --color-primary-deep:   #1F5FB8;
+  --color-primary-ink:    #061224;
+
+  --color-text:    #F0F4FA;
+  --color-muted:   rgba(240, 244, 250, 0.70);
+  --color-dim:     rgba(240, 244, 250, 0.45);
+
+  --color-line:    rgba(79, 158, 255, 0.10);
+  --color-line-hi: rgba(79, 158, 255, 0.30);
+  --color-glow:    rgba(79, 158, 255, 0.45);
+
+  --color-phase-focus:    #4F9EFF;
+  --color-phase-focus-hi: #8EC0FF;
+  --color-phase-short:    #5AD2C2;
+  --color-phase-short-hi: #8AEEDC;
+  --color-phase-long:     #C079FF;
+  --color-phase-long-hi:  #DDA8FF;
+
+  --shadow-card:  0 18px 50px rgba(0, 0, 0, 0.6),  0 0 0 1px rgba(79, 158, 255, 0.06);
+  --shadow-hover: 0 22px 60px rgba(79, 158, 255, 0.18), 0 0 0 1px rgba(79, 158, 255, 0.30);
+}
+
+/* ---------- Alternate theme: Forest Emerald ---------- */
+[data-theme="forest-emerald"] {
+  --color-bg:           #04100A;
+  --color-bg-2:         #07170F;
+  --color-surface:      #0D2419;
+  --color-surface-2:    #07170F;
+
+  --color-primary:        #50C878;
+  --color-primary-hover:  #8AE3A3;
+  --color-primary-deep:   #2A7547;
+  --color-primary-ink:    #052012;
+
+  --color-text:    #F0FAF4;
+  --color-muted:   rgba(240, 250, 244, 0.70);
+  --color-dim:     rgba(240, 250, 244, 0.45);
+
+  --color-line:    rgba(80, 200, 120, 0.10);
+  --color-line-hi: rgba(80, 200, 120, 0.30);
+  --color-glow:    rgba(80, 200, 120, 0.45);
+
+  --color-phase-focus:    #50C878;
+  --color-phase-focus-hi: #8AE3A3;
+  --color-phase-short:    #67D6CA;
+  --color-phase-short-hi: #95EDE4;
+  --color-phase-long:     #BFE85A;
+  --color-phase-long-hi:  #D6F08C;
+
+  --shadow-card:  0 18px 50px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(80, 200, 120, 0.06);
+  --shadow-hover: 0 22px 60px rgba(80, 200, 120, 0.18), 0 0 0 1px rgba(80, 200, 120, 0.30);
+}
+
+/* ---------- Dynamic accent — flips per phase via body class ----------
+   Components read --accent / --accent-hi / --accent-glow and follow the active phase. */
+.phase-focus {
+  --accent:      var(--color-phase-focus);
+  --accent-hi:   var(--color-phase-focus-hi);
+  --accent-glow: var(--color-glow);
+}
+.phase-short {
+  --accent:      var(--color-phase-short);
+  --accent-hi:   var(--color-phase-short-hi);
+  --accent-glow: rgba(110, 193, 196, 0.45);
+}
+.phase-long {
+  --accent:      var(--color-phase-long);
+  --accent-hi:   var(--color-phase-long-hi);
+  --accent-glow: rgba(181, 140, 242, 0.45);
+}

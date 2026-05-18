@@ -1,0 +1,25 @@
+[package]
+name = "pomodoro-premium"
+version = "1.1.0"
+description = "Pomodoro Premium — timer elegante de foco e pausas ergonômicas"
+authors = ["Pomodoro Premium contributors"]
+edition = "2021"
+license = "MIT"
+
+[lib]
+name = "pomodoro_premium_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# Only Tauri runtime. No custom commands → no serde direct dep needed.
+tauri = { version = "2", features = [] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

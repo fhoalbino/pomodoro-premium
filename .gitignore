@@ -1,0 +1,112 @@
+# ============================================================================
+# OS
+# ============================================================================
+# Windows
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# ============================================================================
+# Editors / IDEs
+# ============================================================================
+# VSCode (allow shared, ignore personal)
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+
+# JetBrains
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime
+*.sublime-project
+*.sublime-workspace
+
+# Vim / Emacs
+*.swp
+*.swo
+*.swn
+*~
+\#*\#
+.\#*
+
+# ============================================================================
+# Logs / temp / build output
+# ============================================================================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.tmp
+*.temp
+*.cache
+.cache/
+.parcel-cache/
+.tmp/
+dist/
+build/
+out/
+coverage/
+.nyc_output/
+
+# ============================================================================
+# Dependencies (not needed for this no-build project, but safe defaults)
+# ============================================================================
+node_modules/
+bower_components/
+jspm_packages/
+
+# ============================================================================
+# Env / secrets — NEVER commit
+# ============================================================================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+secrets.json
+credentials.json
+
+# ============================================================================
+# Local PWA / SW dev artifacts
+# ============================================================================
+workbox-*.js
+sw-precache.js
+
+# ============================================================================
+# Tauri (Rust) build output
+# ============================================================================
+src-tauri/target/
+src-tauri/gen/
+src-tauri/WixTools/
+src-tauri/.cargo/
+
+# Generated installers (avoid bloating repo; publish via Releases)
+*.msi
+*.exe
+*.nsis
+*.AppImage
+*.deb
+*.dmg

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="premium-gold">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#050505" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="description" content="Pomodoro Premium — timer elegante com foco, pausas ergonômicas e tema preto e dourado." />
+
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Pomodoro" />
+
+  <title>Pomodoro Premium</title>
+
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="./public/icons/favicon.svg" />
+  <link rel="apple-touch-icon" href="./public/icons/icon-192.svg" />
+
+  <link rel="stylesheet" href="./src/css/themes.css" />
+  <link rel="stylesheet" href="./src/css/base.css" />
+  <link rel="stylesheet" href="./src/css/components.css" />
+  <link rel="stylesheet" href="./src/css/responsive.css" />
+
+  <script type="module" src="./src/js/app.js"></script>
+</head>
+<body class="boot">
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-vignette" aria-hidden="true"></div>
+  <div class="bg-particles" aria-hidden="true">
+    <span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+  </div>
+
+  <div id="splash" class="splash" aria-hidden="true">
+    <div class="splash-mark">
+      <svg viewBox="0 0 64 64" width="56" height="56">
+        <circle cx="32" cy="34" r="20" fill="none" stroke="currentColor" stroke-width="3"/>
+        <rect x="28" y="9" width="8" height="5" rx="2" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="splash-name">POMODORO <span>PREMIUM</span></div>
+    <div class="splash-bar"><i></i></div>
+  </div>
+
+  <main class="app" role="main">
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <span class="brand-text">POMODORO</span>
+        <span class="brand-accent">PREMIUM</span>
+      </div>
+      <div class="header-actions">
+        <button id="muteBtn" class="icon-btn" aria-label="Alternar som" title="Mute (M)">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 5 6 9H2v6h4l5 4z"/>
+            <path class="sound-on" d="M15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14"/>
+            <path class="sound-off hidden" d="M22 9l-6 6M16 9l6 6"/>
+          </svg>
+        </button>
+        <button id="installBtn" class="ghost-btn hidden" aria-label="Instalar aplicativo">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>
+          </svg>
+          Instalar app
+        </button>
+      </div>
+    </header>
+
+    <section class="card timer-card glass" aria-labelledby="phaseLabel">
+      <div class="phase-tabs" role="tablist" aria-label="Selecionar etapa">
+        <span class="tab-indicator" aria-hidden="true"></span>
+        <button class="phase-tab is-active" role="tab" data-phase="focus" aria-selected="true">Foco</button>
+        <button class="phase-tab" role="tab" data-phase="short" aria-selected="false">Pausa curta</button>
+        <button class="phase-tab" role="tab" data-phase="long" aria-selected="false">Pausa longa</button>
+      </div>
+
+      <p id="activeBanner" class="active-banner hidden" role="status" aria-live="polite">
+        <span class="active-banner-dot" aria-hidden="true"></span>
+        Sessão ativa em andamento: <strong id="activeBannerText">Foco • 00:00</strong>
+      </p>
+
+      <div class="ring-wrap">
+        <svg class="ring" viewBox="0 0 240 240" aria-hidden="true">
+          <defs>
+            <linearGradient id="grad-focus" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%"  stop-color="var(--color-phase-focus-hi)"/>
+              <stop offset="100%" stop-color="var(--color-phase-focus)"/>
+            </linearGradient>
+            <linearGradient id="grad-short" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%"  stop-color="var(--color-phase-short-hi)"/>
+              <stop offset="100%" stop-color="var(--color-phase-short)"/>
+            </linearGradient>
+            <linearGradient id="grad-long" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%"  stop-color="var(--color-phase-long-hi)"/>
+              <stop offset="100%" stop-color="var(--color-phase-long)"/>
+            </linearGradient>
+            <filter id="ringGlow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="3.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <circle class="ring-track" cx="120" cy="120" r="108"/>
+          <circle id="ringFg" class="ring-progress" cx="120" cy="120" r="108" filter="url(#ringGlow)"/>
+        </svg>
+
+        <div class="time-block">
+          <span id="phaseLabel" class="phase-label">FOCO</span>
+          <time id="timeText" class="time-text" aria-live="polite" aria-atomic="true">25:00</time>
+          <span id="cycleText" class="cycle-text">Ciclo 1 de 4</span>
+        </div>
+      </div>
+
+      <div class="controls" role="group" aria-label="Controles do timer">
+        <button id="startBtn" class="btn btn-primary" aria-label="Iniciar timer">
+          <span class="btn-label">Iniciar</span>
+        </button>
+        <button id="pauseBtn" class="btn" aria-label="Pausar timer" disabled>Pausar</button>
+        <button id="resetBtn" class="btn btn-ghost" aria-label="Resetar timer" title="Reset (R)">Resetar</button>
+        <button id="skipBtn"  class="btn btn-ghost" aria-label="Pular etapa" title="Pular (S)">Pular ▸</button>
+      </div>
+
+      <p id="ergoMsg" class="ergo-msg" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="card stats-card glass" aria-label="Estatísticas do dia">
+      <div class="stat">
+        <span class="stat-num" id="doneToday">0</span>
+        <span class="stat-label">Pomodoros hoje</span>
+      </div>
+      <div class="stat-sep" aria-hidden="true"></div>
+      <div class="stat">
+        <span class="stat-num" id="streakNum">0</span>
+        <span class="stat-label">Foco no ciclo</span>
+      </div>
+      <div class="stat-sep" aria-hidden="true"></div>
+      <div class="stat">
+        <span class="stat-num" id="streakTotalMin">0<small>m</small></span>
+        <span class="stat-label">Tempo focado</span>
+      </div>
+    </section>
+
+    <section class="card settings-card glass" aria-label="Configurações">
+      <details>
+        <summary>
+          <span class="summary-left">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5h0a1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+            Configurações
+          </span>
+          <span class="summary-chev">▾</span>
+        </summary>
+
+        <div class="settings-grid">
+          <label>
+            <span>Foco</span>
+            <div class="num-input"><input type="number" id="focusMin" min="1" max="120" /><i>min</i></div>
+          </label>
+          <label>
+            <span>Pausa curta</span>
+            <div class="num-input"><input type="number" id="shortMin" min="1" max="60" /><i>min</i></div>
+          </label>
+          <label>
+            <span>Pausa longa</span>
+            <div class="num-input"><input type="number" id="longMin" min="1" max="120" /><i>min</i></div>
+          </label>
+          <label>
+            <span>Ciclos até pausa longa</span>
+            <div class="num-input"><input type="number" id="cyclesUntilLong" min="2" max="12" /><i>×</i></div>
+          </label>
+          <label class="toggle-row">
+            <span>Som de alerta</span>
+            <input type="checkbox" id="soundOn" class="switch" />
+          </label>
+          <label class="toggle-row">
+            <span>Notificações</span>
+            <input type="checkbox" id="notifOn" class="switch" />
+          </label>
+          <label class="toggle-row">
+            <span>Auto-iniciar próxima etapa</span>
+            <input type="checkbox" id="autoStart" class="switch" />
+          </label>
+          <label class="toggle-row">
+            <span>Partículas no fundo</span>
+            <input type="checkbox" id="particlesOn" class="switch" />
+          </label>
+        </div>
+
+        <div class="settings-actions">
+          <button id="resetSettings" class="btn btn-ghost">Restaurar padrão</button>
+          <button id="saveSettings" class="btn btn-primary">Salvar</button>
+        </div>
+      </details>
+    </section>
+
+    <footer class="app-footer">
+      <span><kbd>Espaço</kbd> Iniciar/Pausar</span>
+      <span><kbd>Shift</kbd>+<kbd>R</kbd> Resetar</span>
+      <span><kbd>S</kbd> Pular</span>
+      <span><kbd>M</kbd> Mute</span>
+    </footer>
+  </main>
+
+  <aside id="miniTimer" class="mini-timer hidden" aria-label="Sessão ativa">
+    <span class="mini-timer-dot" aria-hidden="true"></span>
+    <span class="mini-timer-text">
+      <strong id="miniTimerMode">Foco</strong>
+      <span class="mini-timer-sep">•</span>
+      <time id="miniTimerTime">00:00</time>
+    </span>
+    <button id="miniTimerBack" class="mini-timer-back" type="button">Voltar</button>
+  </aside>
+
+  <div id="confirmModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="modal-card">
+      <h3 id="confirmTitle" class="modal-title">Interromper sessão atual?</h3>
+      <p id="confirmText" class="modal-text"></p>
+      <div class="modal-actions">
+        <button id="confirmCancel" class="btn btn-ghost" type="button">Cancelar</button>
+        <button id="confirmOk" class="btn btn-primary" type="button">Continuar</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

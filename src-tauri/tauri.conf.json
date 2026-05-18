@@ -1,0 +1,65 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Pomodoro Premium",
+  "version": "1.1.0",
+  "identifier": "com.pomodoropremium.desktop",
+  "build": {
+    "frontendDist": "./dist",
+    "beforeDevCommand": "powershell -ExecutionPolicy Bypass -File src-tauri/copy-frontend.ps1",
+    "beforeBuildCommand": "powershell -ExecutionPolicy Bypass -File src-tauri/copy-frontend.ps1"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Pomodoro Premium",
+        "width": 620,
+        "height": 820,
+        "minWidth": 420,
+        "minHeight": 600,
+        "resizable": true,
+        "fullscreen": false,
+        "decorations": true,
+        "transparent": false,
+        "alwaysOnTop": false,
+        "center": true,
+        "visible": true,
+        "backgroundColor": "#050505",
+        "dragDropEnabled": false,
+        "incognito": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' ipc: http://ipc.localhost; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'",
+      "freezePrototype": true
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["msi", "nsis"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico"
+    ],
+    "category": "Productivity",
+    "shortDescription": "Pomodoro timer premium",
+    "longDescription": "Timer Pomodoro com foco, pausas ergonômicas, tema preto e dourado. Aplicativo nativo Windows com base em PWA.",
+    "copyright": "© 2026 Pomodoro Premium contributors",
+    "publisher": "Pomodoro Premium",
+    "windows": {
+      "wix": {
+        "language": ["pt-BR", "en-US"]
+      },
+      "nsis": {
+        "installerIcon": "icons/icon.ico",
+        "displayLanguageSelector": false,
+        "languages": ["English"],
+        "installMode": "currentUser"
+      }
+    },
+    "resources": []
+  }
+}

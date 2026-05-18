@@ -1,0 +1,31 @@
+/* ==========================================================================
+   responsive.css — Breakpoints + motion preferences
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  body { padding: 16px 12px 36px; }
+  .card { padding: 18px; }
+  .timer-card { padding: 22px 16px 18px; }
+  .ring-wrap { width: 260px; }
+  .time-text { font-size: 3.4rem; }
+  .btn { padding: 10px 16px; min-width: 80px; font-size: 0.82rem; }
+  .phase-tab { padding: 7px 14px; font-size: 0.72rem; }
+  .stats-card { padding: 14px; }
+  .stat-num { font-size: 1.5rem; }
+  .app-footer { gap: 8px; font-size: 0.66rem; }
+}
+
+@media (min-width: 1024px) {
+  /* Desktop-app feel: tighter top spacing, slight enlargement */
+  body { padding-top: 48px; }
+  .app { max-width: 580px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .bg-particles { display: none; }
+}
