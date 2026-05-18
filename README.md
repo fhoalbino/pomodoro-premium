@@ -184,23 +184,6 @@ Aplique trocando o atributo `data-theme` no `<html>`. Os componentes adaptam aut
 - [ ] Sons alternativos (sino tibetano, ondas, etc.)
 - [ ] Integração com `windowControlsOverlay` para janela frameless premium
 
----
-
-## 🧪 Testar antes de comitar
-
-Checklist mínimo:
-
-- [ ] App abre em `http://localhost:8080` sem erros no console
-- [ ] Timer roda 25min de foco e dispara chime + notificação
-- [ ] Mudar configurações e clicar **Salvar** atualiza imediatamente
-- [ ] Recarregar a página mantém estado e histórico do dia
-- [ ] Botão **Instalar app** aparece no Chrome/Edge
-- [ ] Após instalado, abre em janela standalone
-- [ ] DevTools → Application → Manifest sem warnings
-- [ ] DevTools → Application → Service Workers: ativo, cache populado
-
----
-
 ## 📜 Licença
 
 MIT — veja [`LICENSE`](./LICENSE).
