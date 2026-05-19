@@ -13,6 +13,13 @@ export const DEFAULTS = {
   particlesOn: true,
 };
 
+const WATCHED_FIELDS = [
+  'focusMin', 'shortMin', 'longMin', 'cyclesUntilLong',
+  'soundOn', 'notifOn', 'autoStart', 'particlesOn',
+];
+
+const JUST_SAVED_MS = 1400;
+
 function clampInt(v, mn, mx, fb) {
   const n = parseInt(v, 10);
   if (Number.isNaN(n)) return fb;
@@ -21,23 +28,19 @@ function clampInt(v, mn, mx, fb) {
 
 /**
  * Wire the settings form to read/write a settings object.
+ * Owns the save-button lifecycle: saved / dirty / saving / just-saved.
+ * Guards against double-submit via `isSaving`.
+ *
  * @param {object} opts
  * @param {object} opts.el          — bag of DOM elements (see SETTINGS_FIELDS)
- * @param {Function} opts.onSave    — (nextSettings) => void
+ * @param {Function} opts.onSave    — (nextSettings) => void | Promise<void>
  * @param {Function} opts.onReset   — (defaults) => void
- * @returns {{ populate: (s) => void, read: () => object }}
+ * @returns {{ populate: (s) => void, read: () => object, markSaved: () => void, refreshDirty: () => void }}
  */
 export function setupSettingsUI({ el, onSave, onReset }) {
-  function populate(s) {
-    el.focusMin.value        = s.focusMin;
-    el.shortMin.value        = s.shortMin;
-    el.longMin.value         = s.longMin;
-    el.cyclesUntilLong.value = s.cyclesUntilLong;
-    el.soundOn.checked       = s.soundOn;
-    el.notifOn.checked       = s.notifOn;
-    el.autoStart.checked     = s.autoStart;
-    el.particlesOn.checked   = s.particlesOn;
-  }
+  let isSaving = false;
+  let lastSavedSnapshot = '';
+  let feedbackTimeout = null;
 
   function read() {
     return {
@@ -52,8 +55,103 @@ export function setupSettingsUI({ el, onSave, onReset }) {
     };
   }
 
-  el.saveSettings.addEventListener('click', () => onSave(read()));
-  el.resetSettings.addEventListener('click', () => onReset({ ...DEFAULTS }));
+  function snapshot() {
+    return JSON.stringify(read());
+  }
 
-  return { populate, read };
+  function isDirty() {
+    return snapshot() !== lastSavedSnapshot;
+  }
+
+  function setButtonState(state) {
+    const b = el.saveSettings;
+    b.classList.remove('is-saved', 'is-dirty', 'is-saving', 'is-just-saved');
+    b.classList.add(`is-${state}`);
+    switch (state) {
+      case 'saved':
+        b.textContent = 'Salvo';
+        b.disabled = true;
+        b.setAttribute('aria-label', 'Sem alterações pendentes');
+        break;
+      case 'dirty':
+        b.textContent = 'Salvar alterações';
+        b.disabled = false;
+        b.setAttribute('aria-label', 'Salvar alterações pendentes');
+        break;
+      case 'saving':
+        b.textContent = 'Salvando...';
+        b.disabled = true;
+        b.setAttribute('aria-label', 'Salvando');
+        break;
+      case 'just-saved':
+        b.textContent = 'Salvo ✓';
+        b.disabled = true;
+        b.setAttribute('aria-label', 'Alterações salvas');
+        break;
+    }
+  }
+
+  function refreshDirty() {
+    if (isSaving) return;
+    setButtonState(isDirty() ? 'dirty' : 'saved');
+  }
+
+  function populate(s) {
+    el.focusMin.value        = s.focusMin;
+    el.shortMin.value        = s.shortMin;
+    el.longMin.value         = s.longMin;
+    el.cyclesUntilLong.value = s.cyclesUntilLong;
+    el.soundOn.checked       = s.soundOn;
+    el.notifOn.checked       = s.notifOn;
+    el.autoStart.checked     = s.autoStart;
+    el.particlesOn.checked   = s.particlesOn;
+    lastSavedSnapshot = snapshot();
+    if (!isSaving) setButtonState('saved');
+  }
+
+  function markSaved() {
+    lastSavedSnapshot = snapshot();
+    if (!isSaving) refreshDirty();
+  }
+
+  WATCHED_FIELDS.forEach((name) => {
+    const node = el[name];
+    if (!node) return;
+    const evt = node.type === 'checkbox' ? 'change' : 'input';
+    node.addEventListener(evt, refreshDirty);
+  });
+
+  el.saveSettings.addEventListener('click', async () => {
+    if (isSaving) return;
+    if (!isDirty()) return;
+
+    isSaving = true;
+    setButtonState('saving');
+    if (feedbackTimeout) {
+      clearTimeout(feedbackTimeout);
+      feedbackTimeout = null;
+    }
+
+    try {
+      await onSave(read());
+      lastSavedSnapshot = snapshot();
+      setButtonState('just-saved');
+      feedbackTimeout = setTimeout(() => {
+        feedbackTimeout = null;
+        refreshDirty();
+      }, JUST_SAVED_MS);
+    } catch (err) {
+      console.error('Falha ao salvar configurações:', err);
+      setButtonState('dirty');
+    } finally {
+      isSaving = false;
+    }
+  });
+
+  el.resetSettings.addEventListener('click', () => {
+    if (isSaving) return;
+    onReset({ ...DEFAULTS });
+  });
+
+  return { populate, read, markSaved, refreshDirty };
 }

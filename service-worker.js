@@ -9,7 +9,7 @@
    Bump CACHE_VERSION on any shell change.
    ========================================================================== */
 
-const CACHE_VERSION = 'pomodoro-premium-v7';
+const CACHE_VERSION = 'pomodoro-premium-v8';
 
 const CORE_ASSETS = [
   './',

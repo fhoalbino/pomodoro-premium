@@ -1,6 +1,6 @@
 # Pomodoro Premium
 
-Pomodoro Premium v1.0.1 e um timer Pomodoro preto premium para foco, pausas ergonomicas e acompanhamento do ciclo do dia. O mesmo frontend roda como PWA/web e como app desktop Windows via Tauri.
+Pomodoro Premium v1.0.2 e um timer Pomodoro preto premium para foco, pausas ergonomicas e acompanhamento do ciclo do dia. O mesmo frontend roda como PWA/web e como app desktop Windows via Tauri.
 
 ## Screenshots
 
@@ -87,13 +87,13 @@ No Chrome ou Edge, use o botao "Instalar app" ou o icone de instalacao da barra 
 Para usuario comum, baixe o instalador NSIS da pagina de Releases do GitHub:
 
 ```text
-Pomodoro Premium_1.0.1_x64-setup.exe
+Pomodoro Premium_1.0.2_x64-setup.exe
 ```
 
 Arquivo esperado para anexar na release:
 
 ```text
-src-tauri/target/release/bundle/nsis/Pomodoro Premium_1.0.1_x64-setup.exe
+src-tauri/target/release/bundle/nsis/Pomodoro Premium_1.0.2_x64-setup.exe
 ```
 
 O instalador NSIS usa instalacao por usuario e nao deve ser commitado no repositorio. Publique `.exe` e `.msi` apenas em GitHub Releases.
@@ -127,8 +127,8 @@ cargo tauri build
 Saidas esperadas:
 
 ```text
-src-tauri/target/release/bundle/nsis/Pomodoro Premium_1.0.1_x64-setup.exe
-src-tauri/target/release/bundle/msi/Pomodoro Premium_1.0.1_x64_pt-BR.msi
+src-tauri/target/release/bundle/nsis/Pomodoro Premium_1.0.2_x64-setup.exe
+src-tauri/target/release/bundle/msi/Pomodoro Premium_1.0.2_x64_pt-BR.msi
 ```
 
 Para usuario comum, priorize o NSIS `.exe`.

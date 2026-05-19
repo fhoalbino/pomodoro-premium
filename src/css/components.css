@@ -442,6 +442,42 @@
   margin-top: 18px;
 }
 
+#saveSettings {
+  min-width: 19ch;
+  text-align: center;
+  white-space: nowrap;
+  transition: opacity 200ms var(--ease), box-shadow 200ms var(--ease),
+              transform 200ms var(--ease), filter 200ms var(--ease);
+}
+#saveSettings.is-dirty {
+  animation: save-dirty-pulse 1.8s ease-in-out infinite;
+}
+#saveSettings.is-saving:disabled,
+#saveSettings.is-just-saved:disabled {
+  opacity: 0.92;
+  cursor: default;
+}
+#saveSettings.is-just-saved {
+  filter: brightness(1.08);
+  box-shadow: 0 0 0 2px var(--accent-glow), var(--shadow-primary);
+}
+#saveSettings.is-saving {
+  filter: saturate(0.85);
+}
+@keyframes save-dirty-pulse {
+  0%, 100% {
+    box-shadow: var(--shadow-primary);
+    transform: translateY(0);
+  }
+  50% {
+    box-shadow: 0 0 0 4px var(--accent-glow), 0 12px 30px var(--accent-glow);
+    transform: translateY(-1px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #saveSettings.is-dirty { animation: none; box-shadow: 0 0 0 3px var(--accent-glow), var(--shadow-primary); }
+}
+
 .theme-panel {
   margin-top: 18px;
   padding: 16px;

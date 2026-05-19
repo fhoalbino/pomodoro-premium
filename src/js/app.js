@@ -632,7 +632,6 @@ function boot() {
       if (next.notifOn) Notifications.maybeRequest();
       settingsUI.populate(next);
       render(timer.getState(), next);
-      flashSaved();
     },
     onReset: (defaults) => {
       Storage.saveSettings(defaults);
@@ -650,13 +649,6 @@ function boot() {
     () => render(timer.getState(), timer.getSettings()),
     (phase) => selectTab(phase)
   );
-
-  function flashSaved() {
-    const b = el.saveSettings;
-    const orig = b.textContent;
-    b.textContent = '✓ Salvo';
-    setTimeout(() => { b.textContent = orig; }, 1100);
-  }
 
   /* ----- Tab clicks: change selectedTab ONLY ----- */
   function selectTab(mode) {
